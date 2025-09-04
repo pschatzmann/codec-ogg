@@ -9,12 +9,6 @@ def setup_ogg():
     # Ensure original/ogg exists by cloning if necessary
     original_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../original'))
     ogg_dir = os.path.join(original_dir, 'ogg')
-    if not os.path.exists(ogg_dir):
-        print(f"Cloning ogg repository into {original_dir}...")
-        subprocess.run(["git", "clone", "https://github.com/xiph/ogg.git", ogg_dir], check=True)
-    else:
-        print(f"Updating ogg repository in {ogg_dir}...")
-        subprocess.run(["git", "-C", ogg_dir, "pull"], check=True)
 
     # Source directories
     include_src = os.path.join(ogg_dir, 'include')
@@ -65,9 +59,13 @@ def setup_oggz():
     if not os.path.exists(oggz_dir):
         print(f"Cloning oggz repository into {original_dir}...")
         subprocess.run(["git", "clone", "https://gitlab.xiph.org/xiph/liboggz.git", oggz_dir], check=True)
-    else:
-        print(f"Updating oggz repository in {oggz_dir}...")
-        subprocess.run(["git", "-C", oggz_dir, "pull"], check=True)
+    # Checkout latest tag
+    result = subprocess.run(["git", "-C", oggz_dir, "tag"], capture_output=True, text=True)
+    tags = result.stdout.strip().split('\n')
+    if tags:
+        latest_tag = sorted(tags, key=lambda s: [int(x) if x.isdigit() else x for x in s.replace('v','').replace('-','.').split('.')], reverse=True)[0]
+        print(f"Checking out latest tag {latest_tag} in oggz...")
+        subprocess.run(["git", "-C", oggz_dir, "checkout", latest_tag], check=True)
 
     # Source directory for liboggz
     liboggz_src = os.path.join(oggz_dir, 'src', 'liboggz')
