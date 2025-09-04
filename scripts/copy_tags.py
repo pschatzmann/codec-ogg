@@ -39,6 +39,24 @@ def checkout():
         subprocess.run(["git", "clone", "https://github.com/xiph/ogg.git", ogg_dir], check=True)
 
 
+def update_library_properties_version(tag):
+    """Update library.properties version to the actual tag."""
+    lib_props_path = os.path.abspath(os.path.join(SCRIPT_DIR, '../library.properties'))
+    if os.path.exists(lib_props_path):
+        with open(lib_props_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        with open(lib_props_path, 'w', encoding='utf-8') as f:
+            found = False
+            for line in lines:
+                if line.startswith('version='):
+                    f.write(f'version={tag}\n')
+                    found = True
+                else:
+                    f.write(line)
+            if not found:
+                f.write(f'version={tag}\n')
+        print(f"Updated library.properties version to {tag}")
+
 def main():
     checkout()
     
@@ -57,6 +75,7 @@ def main():
         print(f"Running setup_arduino_library.py for tag '{tag}'...")
         subprocess.run([sys.executable, SETUP_SCRIPT], check=True)
         print(f"Creating and pushing tag '{tag}'...")
+        update_library_properties_version(tag)
         push_attempts = 0
         while push_attempts < 3:
             try:
