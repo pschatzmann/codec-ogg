@@ -50,8 +50,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     tag_name = sys.argv[1]
-    if not commit(tag_name):
-        sys.exit(1)
+    commit(tag_name)
 
     if not create_tag(tag_name):
         sys.exit(2)
