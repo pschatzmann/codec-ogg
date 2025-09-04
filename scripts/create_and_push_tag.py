@@ -7,7 +7,7 @@
 import sys
 import subprocess
 
-MAIN_BRANCH = "master"
+MAIN_BRANCH = "main"
 
 def commit(tag_name):
     # Commit all changes with the tag name as the commit message
