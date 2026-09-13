@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 3.16)
 
+if (DEFINED ESP_PLATFORM)
+  # idf component
+  idf_component_register(
+      SRC_DIRS src/ogg src/oggz/liboggz
+      INCLUDE_DIRS src
+  )
+
+  target_compile_options(${COMPONENT_LIB} PUBLIC -Wno-error -DHAVE_CONFIG_H -Wno-stringop-overread -O2)
+
+else()
+
 # set the project name
 project(arduino_libogg)
 
@@ -22,3 +33,5 @@ target_compile_options(arduino_libogg PRIVATE -DARDUINO -DHAVE_CONFIG_H -Wno-str
 
 # define location for header files
 target_include_directories(arduino_libogg PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src  )
+
+endif()
